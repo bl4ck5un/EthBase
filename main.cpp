@@ -1,22 +1,44 @@
 #include <iostream>
 #include "libethcore/Transaction.h"
+#include "libethcore/Common.h"
+#include "libdevcore/Common.h"
+#include "libdevcrypto/Common.h"
 
 using namespace std;
 using namespace dev;
 
 int main() {
-    u256 value = 0;
-    u256 gas = 0;
-    u256 gasPrice = 0;
-    Address to(0);
-    bytes data = {1,2,3,4};
-    Secret s(data);
+    
+    Address from(100);
+    Address to(200);
+    u256 value = 88888;
+    u256 gas = 500000;
+    u256 gasPrice = 4000;
+    bytes data = {1,2,3,4,5,6,7,8};
 
-    eth::TransactionBase b(value, gasPrice, gas, to, data, 0);
+    h256 r(0);
+    h256 s(0);
+    byte v = 27;
+    SignatureStruct ss(r, s, v);
 
-    dev::RLPStream r;
-    b.streamRLP(r);
+    eth::TransactionSkeleton ts;
+    ts.from = from;
+    ts.to   = to;
+    ts.creation = 0;
+    ts.data = data;
+    ts.gas = gas;
+    ts.gasPrice = gasPrice;
+    ts.nonce = 0;
+    ts.value = value;
 
-    bytes out = r.out();
-    cout << toHex(out) << endl;
+
+    eth::TransactionBase b(ts);
+
+    bytes rlp = b.rlp();
+
+    cout << "From rpl():\t\t" << toHex(rlp) << endl;
+    cout << "TX Detail:\t\t" << b << endl;
+
+    eth::TransactionBase bb(rlp, eth::CheckTransaction::None);
+    cout << "BB Detail:\t\t" << bb <<endl;
 }
