@@ -1,14 +1,22 @@
 #include <iostream>
-#include "SHA3.h"
-#include "vector_ref.h"
+#include "libethcore/Transaction.h"
 
 using namespace std;
 using namespace dev;
 
 int main() {
-    dev::bytes b;
-    cout << dev::sha3("Keccak-256 Test Hash") << endl;
+    u256 value = 0;
+    u256 gas = 0;
+    u256 gasPrice = 0;
+    Address to(0);
+    bytes data = {1,2,3,4};
+    Secret s(data);
 
-    cout << dev::EmptyListSHA3 << endl;
-    return 0;
+    eth::TransactionBase b(value, gasPrice, gas, to, data, 0);
+
+    dev::RLPStream r;
+    b.streamRLP(r);
+
+    bytes out = r.out();
+    cout << toHex(out) << endl;
 }
