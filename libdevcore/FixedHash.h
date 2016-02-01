@@ -26,9 +26,11 @@
 #include <array>
 #include <cstdint>
 #include <algorithm>
+#ifdef HAS_BOOST
 #include <boost/random/random_device.hpp>
 #include <boost/random/uniform_int_distribution.hpp>
 #include <boost/functional/hash.hpp>
+#endif
 #include "CommonData.h"
 
 namespace dev

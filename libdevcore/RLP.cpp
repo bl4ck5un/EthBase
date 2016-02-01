@@ -23,9 +23,11 @@
 using namespace std;
 using namespace dev;
 
+
 bytes dev::RLPNull = rlp("");
 bytes dev::RLPEmptyList = rlpList();
 
+#ifdef HAS_RLP
 RLP::RLP(bytesConstRef _d, Strictness _s):
 	m_data(_d)
 {
@@ -226,6 +228,7 @@ size_t RLP::items() const
 	}
 	return 0;
 }
+#endif
 
 RLPStream& RLPStream::appendRaw(bytesConstRef _s, size_t _itemCount)
 {

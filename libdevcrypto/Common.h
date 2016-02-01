@@ -140,6 +140,7 @@ bytesSec pbkdf2(std::string const& _pass, bytes const& _salt, unsigned _iteratio
 /// Derive key via Scrypt.
 bytesSec scrypt(std::string const& _pass, bytes const& _salt, uint64_t _n, uint32_t _r, uint32_t _p, unsigned _dkLen);
 
+#ifdef HAS_CRYPTO
 /// Simple class that represents a "key pair".
 /// All of the data of the class can be regenerated from the secret key (m_secret) alone.
 /// Actually stores a tuplet of secret, public and address (the right 160-bits of the public).
@@ -213,6 +214,6 @@ private:
 	Secret m_value;
 };
 
-}
-
-}
+} // crypto::
+#endif
+} // dev::

@@ -30,6 +30,7 @@ namespace eth
 {
 
 // information to add to exceptions
+#ifdef HAS_BOOST        
 using errinfo_name = boost::error_info<struct tag_field, std::string>;
 using errinfo_field = boost::error_info<struct tag_field, int>;
 using errinfo_data = boost::error_info<struct tag_data, std::string>;
@@ -40,6 +41,7 @@ using errinfo_seedHash = boost::error_info<struct tag_seedHash, h256>;
 using errinfo_mixHash = boost::error_info<struct tag_mixHash, h256>;
 using errinfo_ethashResult = boost::error_info<struct tag_ethashResult, std::tuple<h256, h256>>;
 using BadFieldError = boost::tuple<errinfo_field, errinfo_data>;
+#endif
 
 DEV_SIMPLE_EXCEPTION(OutOfGasBase);
 DEV_SIMPLE_EXCEPTION(OutOfGasIntrinsic);

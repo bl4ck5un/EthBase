@@ -44,11 +44,13 @@
 #pragma warning(push)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#ifdef HAS_BOOST
 #include <boost/version.hpp>
 #if (BOOST_VERSION == 105800)
 	#include "boost_multiprecision_number_compare_bug_workaround.hpp"
 #endif
 #include <boost/multiprecision/cpp_int.hpp>
+#endif
 #pragma warning(pop)
 #pragma GCC diagnostic pop
 #include "vector_ref.h"

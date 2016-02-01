@@ -53,7 +53,12 @@ static const byte c_rlpDataIndLenZero = c_rlpDataImmLenStart + c_rlpDataImmLenCo
 static const byte c_rlpListImmLenCount = 256 - c_rlpListStart - c_rlpMaxLengthBytes;
 static const byte c_rlpListIndLenZero = c_rlpListStart + c_rlpListImmLenCount - 1;
 
-template <class T> struct Converter { static T convert(RLP const&, int) { BOOST_THROW_EXCEPTION(BadCast()); } };
+template <class T> struct Converter {
+    static T convert(RLP const&, int) {
+//		BOOST_THROW_EXCEPTION(BadCast());
+
+    }
+};
 
 /**
  * @brief Class for interpreting Recursive Linear-Prefix Data.
@@ -61,6 +66,8 @@ template <class T> struct Converter { static T convert(RLP const&, int) { BOOST_
  *
  * Class for reading byte arrays of data in RLP format.
  */
+
+#ifdef HAS_RLP
 class RLP
 {
 public:
@@ -116,7 +123,12 @@ public:
 
 	/// @returns the number of items in the list, or zero if it isn't a list.
 	size_t itemCount() const { return isList() ? items() : 0; }
-	size_t itemCountStrict() const { if (!isList()) BOOST_THROW_EXCEPTION(BadCast()); return items(); }
+	size_t itemCountStrict() const {
+        if (!isList())
+//            BOOST_THROW_EXCEPTION(BadCast());
+            return (size_t) -1;
+        return items();
+    }
 
 	/// @returns the number of bytes in the data, or zero if it isn't data.
 	size_t size() const { return isData() ? length() : 0; }
@@ -358,6 +370,7 @@ private:
 	mutable bytesConstRef m_lastItem;
 };
 
+
 template <> struct Converter<std::string> { static std::string convert(RLP const& _r, int _flags) { return _r.toString(_flags); } };
 template <> struct Converter<bytes> { static bytes convert(RLP const& _r, int _flags) { return _r.toBytes(_flags); } };
 template <> struct Converter<RLPs> { static RLPs convert(RLP const& _r, int _flags) { return _r.toList(_flags); } };
@@ -376,7 +389,7 @@ template <class T> struct Converter<std::unordered_set<T>> { static std::unorder
 template <class T, size_t N> struct Converter<std::array<T, N>> { static std::array<T, N> convert(RLP const& _r, int _flags) { return _r.toArray<T, N>(_flags); } };
 
 template <class T> inline T RLP::convert(int _flags) const { return Converter<T>::convert(*this, _flags); }
-
+#endif
 /**
  * @brief Class for writing to an RLP bytestream.
  */
@@ -403,7 +416,7 @@ public:
 	template <unsigned N> RLPStream& append(FixedHash<N> _s, bool _compact = false, bool _allOrNothing = false) { return _allOrNothing && !_s ? append(bytesConstRef()) : append(_s.ref(), _compact); }
 
 	/// Appends an arbitrary RLP fragment - this *must* be a single item unless @a _itemCount is given.
-	RLPStream& append(RLP const& _rlp, size_t _itemCount = 1) { return appendRaw(_rlp.data(), _itemCount); }
+//	RLPStream& append(RLP const& _rlp, size_t _itemCount = 1) { return appendRaw(_rlp.data(), _itemCount); }
 
 	/// Appends a sequence of data to the stream as a list.
 	template <class _T> RLPStream& append(std::vector<_T> const& _s) { return appendVector(_s); }
@@ -430,13 +443,25 @@ public:
 	void clear() { m_out.clear(); m_listStack.clear(); }
 
 	/// Read the byte stream.
-	bytes const& out() const { if(!m_listStack.empty()) BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty")); return m_out; }
+	bytes const& out() const {
+        if(!m_listStack.empty())
+//            BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty"));
+//            return m_out;
+            return bytes();
+        return m_out;
+    }
 
 	/// Invalidate the object and steal the output byte stream.
-	bytes&& invalidate() { if(!m_listStack.empty()) BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty")); return std::move(m_out); }
+//	bytes&& invalidate() {
+//        if(!m_listStack.empty())
+//            BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty"));
+//            return nullptr;
+//        return std::move(m_out);
+//    }
 
 	/// Swap the contents of the output stream out for some other byte array.
-	void swapOut(bytes& _dest) { if(!m_listStack.empty()) BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty")); swap(m_out, _dest); }
+//	void swapOut(bytes& _dest) {
+//        if(!m_listStack.empty()) BOOST_THROW_EXCEPTION(RLPException() << errinfo_comment("listStack is not empty")); swap(m_out, _dest); }
 
 private:
 	void noteAppended(size_t _itemCount = 1);
